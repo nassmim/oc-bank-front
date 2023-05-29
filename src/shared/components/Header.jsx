@@ -8,10 +8,10 @@ const Header = () => {
         <h1 class="sr-only">Argent Bank</h1>
       </Link>
       <div>
-        <a class="main-nav-item" href="./sign-in.html">
+        <Link class="main-nav-item" to="/sign-up">
           <i class="fa fa-user-circle"></i>
           Sign In
-        </a>
+        </Link>
       </div>
     </nav>
   )
