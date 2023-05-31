@@ -19,7 +19,7 @@ const Profile = () => {
         <h1>
           Welcome back
           <br />
-          {user.firstName} {user.lastName}!
+          {user?.firstName} {user?.lastName}!
         </h1>
         <button class="edit-button">Edit Name</button>
       </div>
