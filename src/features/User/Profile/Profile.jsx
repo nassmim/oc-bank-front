@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token')
 
   // Gets the user profile information
   const { data: user, isError } = useGetProfileQuery(token)
