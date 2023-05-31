@@ -10,7 +10,7 @@ const Profile = () => {
   const { data: user, isError } = useGetProfileQuery(token)
   if (isError) {
     // User cannot be retrieved if token is not valid anymore, so he must re-login
-    navigate('/login')
+    navigate('/sign-in')
   }
 
   return (

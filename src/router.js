@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
-import Login from './features/User/Login/Login.jsx'
+import SignIn from './features/User/SignIn/SignIn.jsx'
 import App from './App.js'
 import Home from './features/Home/Home.jsx'
 import Profile from './features/User/Profile/Profile.jsx'
@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/sign-in',
-        element: <Login />,
+        element: <SignIn />,
       },
       {
         path: '/profile',
