@@ -1,8 +1,78 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGetProfileQuery } from '../../api/apiSlice.js'
 import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
+
+const EditUserForm = styled.form`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr 1fr;
+  row-gap: 10px;
+  column-gap: 20px;
+`
+
+const EditUserInputWrapper = styled.div`
+  width: 80%;
+  margin-bottom: 0;
+  ${(props) => {
+    if (props.isFirstInput) {
+      return `
+      grid-column-start: 2;
+      justify-self: flex-end;
+      `
+    } else {
+      return `
+      grid-column-start: 3;
+      justify-self: flex-start;
+      `
+    }
+  }}
+`
+
+const EditUserInput = styled.input`
+  font-weight: bold;
+  color: lightgray;
+  margin-top: 0px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0px 0px 3px 2px lightgray;
+`
+const EditUserButtonWrapper = styled.div`
+  width: 50%;
+  margin-top: 0px;
+  grid-row-start: 2;
+  ${(props) => {
+    if (props.isFirstInput) {
+      return `
+      grid-column-start: 2;
+      justify-self: flex-end;
+      `
+    } else {
+      return `
+      grid-column-start: 3;
+      justify-self: flex-start;
+      `
+    }
+  }}
+`
+
+const EditUserButton = styled.button`
+  background-color: #fff;
+  color: mediumpurple;
+  margin-top: 0px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0px 0px 3px 2px mediumpurple;
+  cursor: pointer;
+`
 
 const Profile = () => {
+  const firstnameInputElement = useRef()
+  const lastnameInputElement = useRef()
+  const [displayEditUserForm, setDisplayEditUserForm] = useState(false)
+  const [userFirstName, setUserFirstName] = useState('')
+  const [userLastName, setUserLastName] = useState('')
+
   const navigate = useNavigate()
   const token = localStorage.getItem('token') || sessionStorage.getItem('token')
 
@@ -13,18 +83,89 @@ const Profile = () => {
     if (isError) {
       // User cannot be retrieved if token is not valid anymore, so he must re-login
       navigate('/sign-in')
+    } else if (user) {
+      setUserNames(user.firstName, user.lastName)
     }
-  }, [isError, navigate])
+  }, [user, isError, navigate])
+
+  const saveUserNamesEditing = async (e) => {
+    e.preventDefault()
+  }
+
+  const cancelUserNamesEditing = (e) => {
+    e.preventDefault()
+    setUserNames(user.firstName, user.lastName)
+    setDisplayEditUserForm(false)
+  }
+
+  const setUserNames = (firstName, lastName) => {
+    setUserFirstName(firstName)
+    setUserLastName(lastName)
+  }
 
   return (
     <main className="main bg-dark">
       <div className="header">
-        <h1>
-          Welcome back
-          <br />
-          {user?.firstName} {user?.lastName}!
-        </h1>
-        <button className="edit-button">Edit Name</button>
+        {user && (
+          <>
+            <h1>
+              Welcome back
+              <br />
+              {userFirstName} {userLastName}!
+            </h1>
+
+            {!displayEditUserForm && (
+              <button
+                className="edit-button"
+                onClick={() => setDisplayEditUserForm(true)}
+              >
+                Edit Name
+              </button>
+            )}
+            {displayEditUserForm && (
+              <EditUserForm>
+                <EditUserInputWrapper
+                  className="input-wrapper editUserFormItem"
+                  isFirstInput={true}
+                >
+                  <EditUserInput
+                    type="text"
+                    id="firstname"
+                    value={userFirstName}
+                    onInput={(e) => setUserFirstName(e.target.value)}
+                  />
+                </EditUserInputWrapper>
+                <EditUserInputWrapper className="input-wrapper editUserFormItem">
+                  <EditUserInput
+                    type="text"
+                    id="lastname"
+                    value={userLastName}
+                    onInput={(e) => setUserLastName(e.target.value)}
+                  />
+                </EditUserInputWrapper>
+                <EditUserButtonWrapper
+                  className="edit-button-wrapper editUserFormItem"
+                  isFirstInput={true}
+                >
+                  <EditUserButton
+                    className="sign-in-button"
+                    onClick={(e) => saveUserNamesEditing(e)}
+                  >
+                    Save
+                  </EditUserButton>
+                </EditUserButtonWrapper>
+                <EditUserButtonWrapper className="edit-button-wrapper editUserFormItem">
+                  <EditUserButton
+                    className="sign-in-button"
+                    onClick={(e) => cancelUserNamesEditing(e)}
+                  >
+                    Cancel
+                  </EditUserButton>
+                </EditUserButtonWrapper>
+              </EditUserForm>
+            )}
+          </>
+        )}
       </div>
       <h2 className="sr-only">Accounts</h2>
       <section className="account">
