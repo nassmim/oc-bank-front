@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGetProfileQuery } from '../../api/apiSlice.js'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { useUpdateUserNamesMutation } from '../../api/apiSlice.js'
 
 const EditUserForm = styled.form`
   display: grid;
@@ -67,8 +68,6 @@ const EditUserButton = styled.button`
 `
 
 const Profile = () => {
-  const firstnameInputElement = useRef()
-  const lastnameInputElement = useRef()
   const [displayEditUserForm, setDisplayEditUserForm] = useState(false)
   const [userFirstName, setUserFirstName] = useState('')
   const [userLastName, setUserLastName] = useState('')
@@ -78,6 +77,7 @@ const Profile = () => {
 
   // Gets the user profile information
   const { data: user, isError } = useGetProfileQuery(token)
+  const [updateUserNames] = useUpdateUserNamesMutation()
 
   useEffect(() => {
     if (isError) {
@@ -90,6 +90,22 @@ const Profile = () => {
 
   const saveUserNamesEditing = async (e) => {
     e.preventDefault()
+    const newNames = {
+      firstName: userFirstName,
+      lastName: userLastName,
+    }
+    const data = {
+      names: newNames,
+      token,
+    }
+
+    try {
+      await updateUserNames(data)
+    } catch (err) {
+      console.log(err)
+      setUserFirstName(user.firstName)
+      setUserFirstName(user.lastName)
+    }
   }
 
   const cancelUserNamesEditing = (e) => {
