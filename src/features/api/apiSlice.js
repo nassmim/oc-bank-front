@@ -21,6 +21,24 @@ export const apiSlice = createApi({
       }),
       transformResponse: (response) => response.body,
     }),
+    updateUserNames: builder.mutation({
+      query: ({ names, token }) => {
+        console.log({ names, token })
+        console.log(names)
+        console.log(token)
+        return {
+          url: '/profile',
+          method: 'PUT',
+          body: names,
+          headers: { authorization: `Bearer ${token}` },
+        }
+      },
+      transformResponse: (response) => response.body,
+    }),
   }),
 })
-export const { useLoginMutation, useGetProfileQuery } = apiSlice
+export const {
+  useLoginMutation,
+  useGetProfileQuery,
+  useUpdateUserNamesMutation,
+} = apiSlice
