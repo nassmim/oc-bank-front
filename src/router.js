@@ -3,6 +3,7 @@ import SignIn from './features/User/SignIn/SignIn.jsx'
 import App from './App.js'
 import Home from './features/Home/Home.jsx'
 import Profile from './features/User/Profile/Profile.jsx'
+import Authenticated from './shared/components/Authenticated.js'
 
 export const router = createBrowserRouter([
   {
@@ -18,8 +19,13 @@ export const router = createBrowserRouter([
         element: <SignIn />,
       },
       {
-        path: '/profile',
-        element: <Profile />,
+        element: <Authenticated />,
+        children: [
+          {
+            path: '/profile',
+            element: <Profile />,
+          },
+        ],
       },
     ],
   },

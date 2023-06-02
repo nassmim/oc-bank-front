@@ -1,42 +1,39 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: 'http://localhost:3001/api/v1/user',
+  prepareHeaders: (headers, { getState }) => {
+    const token = getState().user.token
+    if (token) headers.set('Authorization', `Bearer ${token}`)
+    return headers
+  },
+})
+
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001/api/v1/user' }),
+  baseQuery: baseQuery,
   tagTypes: ['User'],
   endpoints: (builder) => ({
-    login: builder.mutation({
-      query: (credentials) => ({
-        url: '/login',
-        method: 'POST',
-        body: credentials,
-      }),
-      transformResponse: (response) => response.body.token,
-    }),
     getProfile: builder.query({
       providesTags: ['Profile'],
-      query: (token) => ({
+      query: () => ({
         url: '/profile',
         method: 'POST',
         body: {},
-        headers: { authorization: `Bearer ${token}` },
       }),
       transformResponse: (response) => response.body,
     }),
     updateUserNames: builder.mutation({
       invalidatesTags: ['Profile'],
-      query: ({ names, token }) => ({
+      query: (names) => ({
         url: '/profile',
         method: 'PUT',
         body: names,
-        headers: { authorization: `Bearer ${token}` },
+        // headers: { authorization: `Bearer ${token}` },
       }),
       transformResponse: (response) => response.body,
     }),
   }),
 })
-export const {
-  useLoginMutation,
-  useGetProfileQuery,
-  useUpdateUserNamesMutation,
-} = apiSlice
+
+export const { useGetProfileQuery, useUpdateUserNamesMutation } = apiSlice

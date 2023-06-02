@@ -1,16 +1,28 @@
 import { useNavigate } from 'react-router-dom'
-import { useRef } from 'react'
-import { useLoginMutation } from '../../api/apiSlice.js'
+import { useEffect, useRef } from 'react'
+import { useLoginMutation } from '../../api/Auth/authApiSlice.js'
+import { useDispatch } from 'react-redux'
+import { loggedIn } from '../userSlice.js'
 
 const SignIn = () => {
   const emailInputElement = useRef()
   const passwordInputElement = useRef()
   const rememberMeCheckboxElement = useRef()
-
-  const [loginRequest] = useLoginMutation()
+  const dispatch = useDispatch()
+  const [loginApiRequest] = useLoginMutation()
   const navigate = useNavigate()
 
-  const login = async (e) => {
+  const activateUser = (token) => {
+    // If the user wants to be remembered, his token is saved in localstorage
+    // so that it lasts longer
+    if (rememberMeCheckboxElement.current.checked)
+      localStorage.setItem('token', token)
+    else sessionStorage.setItem('token', token)
+
+    dispatch(loggedIn(token))
+  }
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault()
     const credentials = {
       email: emailInputElement.current?.value,
@@ -19,20 +31,20 @@ const SignIn = () => {
 
     let token
     try {
-      token = await loginRequest(credentials).unwrap()
+      token = await loginApiRequest(credentials).unwrap()
     } catch (err) {
       console.log(err)
       return
     }
 
-    // If the user wants to be remembered, his token is saved in localstorage
-    // so that it lasts longer
-    if (rememberMeCheckboxElement.current.value === true)
-      localStorage.setItem('token', token)
-    else sessionStorage.setItem('token', token)
+    activateUser(token)
 
     navigate('/profile')
   }
+
+  useEffect(() => {
+    emailInputElement.current.focus()
+  }, [])
 
   return (
     <main className="main bg-dark">
@@ -56,7 +68,10 @@ const SignIn = () => {
             />
             <label htmlFor="remember-me">Remember me</label>
           </div>
-          <button className="sign-in-button" onClick={(e) => login(e)}>
+          <button
+            className="sign-in-button"
+            onClick={(e) => handleLoginSubmit(e)}
+          >
             Sign In
           </button>
         </form>

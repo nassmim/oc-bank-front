@@ -1,31 +1,23 @@
 import { Link, useNavigate } from 'react-router-dom'
 import logoImg from '../../assets/img/argentBankLogo.png'
+import { useDispatch, useSelector } from 'react-redux'
+import { loggedOut, selectToken } from '../../features/User/userSlice.js'
 import { useGetProfileQuery } from '../../features/api/apiSlice.js'
-import { useEffect } from 'react'
 
 const Header = () => {
+  const token = useSelector(selectToken)
   const navigate = useNavigate()
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-  const {
-    data: user,
-    isSuccess: userFound,
-    isError: userFetchReturnedError,
-  } = useGetProfileQuery(token)
+  const dispatch = useDispatch()
+  const { data: user } = useGetProfileQuery()
 
   const removeToken = () => {
+    dispatch(loggedOut())
     localStorage.removeItem('token')
-    sessionStorage.removeItem('token')
   }
   const logout = () => {
     removeToken()
     navigate('/')
   }
-
-  useEffect(() => {
-    if (userFetchReturnedError) {
-      removeToken()
-    }
-  }, [userFetchReturnedError])
 
   return (
     <nav className="main-nav">
@@ -38,7 +30,7 @@ const Header = () => {
         <h1 className="sr-only">Argent Bank</h1>
       </Link>
       <div>
-        {userFound ? (
+        {token && user ? (
           <>
             <a className="main-nav-item" href="./user.html">
               <i className="fa fa-user-circle"></i>
