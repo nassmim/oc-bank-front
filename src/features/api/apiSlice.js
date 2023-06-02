@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001/api/v1/user' }),
+  tagTypes: ['User'],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
@@ -13,6 +14,7 @@ export const apiSlice = createApi({
       transformResponse: (response) => response.body.token,
     }),
     getProfile: builder.query({
+      providesTags: ['Profile'],
       query: (token) => ({
         url: '/profile',
         method: 'POST',
@@ -22,17 +24,13 @@ export const apiSlice = createApi({
       transformResponse: (response) => response.body,
     }),
     updateUserNames: builder.mutation({
-      query: ({ names, token }) => {
-        console.log({ names, token })
-        console.log(names)
-        console.log(token)
-        return {
-          url: '/profile',
-          method: 'PUT',
-          body: names,
-          headers: { authorization: `Bearer ${token}` },
-        }
-      },
+      invalidatesTags: ['Profile'],
+      query: ({ names, token }) => ({
+        url: '/profile',
+        method: 'PUT',
+        body: names,
+        headers: { authorization: `Bearer ${token}` },
+      }),
       transformResponse: (response) => response.body,
     }),
   }),
