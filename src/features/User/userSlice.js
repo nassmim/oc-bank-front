@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+// Necessary so that we still know if a token exists after a page refresh
 const token =
   localStorage.getItem('token') || sessionStorage.getItem('token') || null
 
