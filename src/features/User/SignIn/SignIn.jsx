@@ -1,16 +1,20 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
 import { useLoginMutation } from '../../api/Auth/authApiSlice.js'
-import { useDispatch } from 'react-redux'
-import { loggedIn } from '../userSlice.js'
+import { useDispatch, useSelector } from 'react-redux'
+import { loggedIn, selectToken } from '../userSlice.js'
+import { useGetProfileQuery } from '../../api/apiSlice.js'
 
 const SignIn = () => {
   const emailInputElement = useRef()
   const passwordInputElement = useRef()
   const rememberMeCheckboxElement = useRef()
   const dispatch = useDispatch()
+  const token = useSelector(selectToken)
   const [loginApiRequest] = useLoginMutation()
   const navigate = useNavigate()
+
+  const { data: user, isSuccess, isError } = useGetProfileQuery()
 
   const activateUser = (token) => {
     // If the user wants to be remembered, his token is saved in localstorage
@@ -43,8 +47,9 @@ const SignIn = () => {
   }
 
   useEffect(() => {
-    emailInputElement.current.focus()
-  }, [])
+    if (isSuccess) navigate('/profile')
+    else emailInputElement.current.focus()
+  }, [isSuccess, isError])
 
   return (
     <main className="main bg-dark">
