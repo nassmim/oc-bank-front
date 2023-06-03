@@ -72,7 +72,7 @@ const Profile = () => {
   const [userLastName, setUserLastName] = useState('')
 
   // Gets the user profile information
-  const { data: user } = useGetProfileQuery()
+  const { data: user, isSuccess } = useGetProfileQuery()
   const [updateUserNames] = useUpdateUserNamesMutation()
 
   const saveUserNamesEditing = async (e) => {
@@ -86,9 +86,10 @@ const Profile = () => {
       await updateUserNames(names)
     } catch (err) {
       console.log(err)
-      setUserFirstName(user.firstName)
-      setUserFirstName(user.lastName)
+      setUserNames(user.firstName, user.lastName)
     }
+
+    setDisplayEditUserForm(false)
   }
 
   const cancelUserNamesEditing = (e) => {
@@ -103,10 +104,8 @@ const Profile = () => {
   }
 
   useEffect(() => {
-    if (user) {
-      setUserNames(user.firstName, user.lastName)
-    }
-  }, [user])
+    isSuccess && setUserNames(user.firstName, user.lastName)
+  }, [isSuccess])
 
   return (
     <main className="main bg-dark">
