@@ -77,6 +77,10 @@ const Profile = () => {
 
   const saveUserNamesEditing = async (e) => {
     e.preventDefault()
+
+    if (userFirstName.trim().length === 0 || userLastName.trim().length === 0)
+      return
+
     const names = {
       firstName: userFirstName,
       lastName: userLastName,
