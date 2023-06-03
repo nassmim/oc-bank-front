@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useGetProfileQuery } from '../../api/apiSlice.js'
-import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useUpdateUserNamesMutation } from '../../api/apiSlice.js'
 
@@ -72,35 +71,19 @@ const Profile = () => {
   const [userFirstName, setUserFirstName] = useState('')
   const [userLastName, setUserLastName] = useState('')
 
-  const navigate = useNavigate()
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-
   // Gets the user profile information
-  const { data: user, isError } = useGetProfileQuery(token)
+  const { data: user } = useGetProfileQuery()
   const [updateUserNames] = useUpdateUserNamesMutation()
-
-  useEffect(() => {
-    if (isError) {
-      // User cannot be retrieved if token is not valid anymore, so he must re-login
-      navigate('/sign-in')
-    } else if (user) {
-      setUserNames(user.firstName, user.lastName)
-    }
-  }, [user, isError, navigate])
 
   const saveUserNamesEditing = async (e) => {
     e.preventDefault()
-    const newNames = {
+    const names = {
       firstName: userFirstName,
       lastName: userLastName,
     }
-    const data = {
-      names: newNames,
-      token,
-    }
 
     try {
-      await updateUserNames(data)
+      await updateUserNames(names)
     } catch (err) {
       console.log(err)
       setUserFirstName(user.firstName)
@@ -118,6 +101,12 @@ const Profile = () => {
     setUserFirstName(firstName)
     setUserLastName(lastName)
   }
+
+  useEffect(() => {
+    if (user) {
+      setUserNames(user.firstName, user.lastName)
+    }
+  }, [user])
 
   return (
     <main className="main bg-dark">
