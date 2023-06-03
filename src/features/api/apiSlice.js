@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
+// Creating the RTK baseQuery outside to setup headers with the token
 const baseQuery = fetchBaseQuery({
   baseUrl: 'http://localhost:3001/api/v1/user',
   prepareHeaders: (headers, { getState }) => {
@@ -14,6 +15,7 @@ export const apiSlice = createApi({
   baseQuery: baseQuery,
   tagTypes: ['User'],
   endpoints: (builder) => ({
+    // Gets the user information (first name and last name)
     getProfile: builder.query({
       providesTags: ['Profile'],
       query: () => ({
@@ -23,13 +25,18 @@ export const apiSlice = createApi({
       }),
       transformResponse: (response) => response.body,
     }),
+
     updateUserNames: builder.mutation({
       invalidatesTags: ['Profile'],
+      /**
+       * Updates the DB with the names object
+       * @param {Object} names representing the user first and last names
+       * @returns
+       */
       query: (names) => ({
         url: '/profile',
         method: 'PUT',
         body: names,
-        // headers: { authorization: `Bearer ${token}` },
       }),
       transformResponse: (response) => response.body,
     }),

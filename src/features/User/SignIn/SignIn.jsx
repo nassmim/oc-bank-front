@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
 import { useLoginMutation } from '../../api/Auth/authApiSlice.js'
-import { useDispatch, useSelector } from 'react-redux'
-import { loggedIn, selectToken } from '../userSlice.js'
+import { useDispatch } from 'react-redux'
+import { loggedIn } from '../userSlice.js'
 import { useGetProfileQuery } from '../../api/apiSlice.js'
 
 const SignIn = () => {
@@ -10,12 +10,16 @@ const SignIn = () => {
   const passwordInputElement = useRef()
   const rememberMeCheckboxElement = useRef()
   const dispatch = useDispatch()
-  const token = useSelector(selectToken)
   const [loginApiRequest] = useLoginMutation()
   const navigate = useNavigate()
 
+  // Gets the user profile information
   const { data: user, isSuccess, isError } = useGetProfileQuery()
 
+  /**
+   * Saves the token in the browser
+   * @param {String} token as a JWT
+   */
   const activateUser = (token) => {
     // If the user wants to be remembered, his token is saved in localstorage
     // so that it lasts longer
@@ -23,9 +27,14 @@ const SignIn = () => {
       localStorage.setItem('token', token)
     else sessionStorage.setItem('token', token)
 
+    // Updates le token dans le state du user
     dispatch(loggedIn(token))
   }
 
+  /**
+   * Log the user in and gets his JWT
+   * @param {HTMLButtonElement} e
+   */
   const handleLoginSubmit = async (e) => {
     e.preventDefault()
     const credentials = {
@@ -46,6 +55,7 @@ const SignIn = () => {
     navigate('/profile')
   }
 
+  // If user reaches the url screen while connected he's redirected
   useEffect(() => {
     if (isSuccess) navigate('/profile')
     else emailInputElement.current.focus()

@@ -1,70 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useGetProfileQuery } from '../../api/apiSlice.js'
-import styled from 'styled-components'
 import { useUpdateUserNamesMutation } from '../../api/apiSlice.js'
-
-const EditUserForm = styled.form`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 1fr 1fr;
-  row-gap: 10px;
-  column-gap: 20px;
-`
-
-const EditUserInputWrapper = styled.div`
-  width: 80%;
-  margin-bottom: 0;
-  ${(props) => {
-    if (props.isFirstInput) {
-      return `
-      grid-column-start: 2;
-      justify-self: flex-end;
-      `
-    } else {
-      return `
-      grid-column-start: 3;
-      justify-self: flex-start;
-      `
-    }
-  }}
-`
-
-const EditUserInput = styled.input`
-  font-weight: bold;
-  color: lightgray;
-  margin-top: 0px;
-  border-radius: 5px;
-  border: none;
-  box-shadow: 0px 0px 3px 2px lightgray;
-`
-const EditUserButtonWrapper = styled.div`
-  width: 50%;
-  margin-top: 0px;
-  grid-row-start: 2;
-  ${(props) => {
-    if (props.isFirstInput) {
-      return `
-      grid-column-start: 2;
-      justify-self: flex-end;
-      `
-    } else {
-      return `
-      grid-column-start: 3;
-      justify-self: flex-start;
-      `
-    }
-  }}
-`
-
-const EditUserButton = styled.button`
-  background-color: #fff;
-  color: mediumpurple;
-  margin-top: 0px;
-  border-radius: 5px;
-  border: none;
-  box-shadow: 0px 0px 3px 2px mediumpurple;
-  cursor: pointer;
-`
+import {
+  EditUserForm,
+  EditUserInputWrapper,
+  EditUserInput,
+  EditUserButtonWrapper,
+  EditUserButton,
+} from '../../User/Profile/style.js'
 
 const Profile = () => {
   const [displayEditUserForm, setDisplayEditUserForm] = useState(false)
@@ -72,9 +15,15 @@ const Profile = () => {
   const [userLastName, setUserLastName] = useState('')
 
   // Gets the user profile information
-  const { data: user, isSuccess } = useGetProfileQuery()
+  const { data: user } = useGetProfileQuery()
+
   const [updateUserNames] = useUpdateUserNamesMutation()
 
+  /**
+   * Save the new names in the database
+   * @param { HTMLButtonElement} e
+   * @returns
+   */
   const saveUserNamesEditing = async (e) => {
     e.preventDefault()
 
@@ -90,6 +39,8 @@ const Profile = () => {
       await updateUserNames(names)
     } catch (err) {
       console.log(err)
+      // Restablish the state with the user information stored in DB
+      // Need to do that as the state was updated at every input change
       setUserNames(user.firstName, user.lastName)
     }
 
@@ -107,9 +58,11 @@ const Profile = () => {
     setUserLastName(lastName)
   }
 
+  // When mounts for first time, sets the state with the user information
+  // currently saved in DB
   useEffect(() => {
-    isSuccess && setUserNames(user.firstName, user.lastName)
-  }, [isSuccess])
+    setUserNames(user.firstName, user.lastName)
+  }, [])
 
   return (
     <main className="main bg-dark">
