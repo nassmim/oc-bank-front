@@ -13,6 +13,7 @@ const Header = () => {
   const removeToken = () => {
     dispatch(loggedOut())
     localStorage.removeItem('token')
+    sessionStorage.removeItem('token')
   }
   const logout = () => {
     removeToken()
