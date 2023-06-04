@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react'
-import { useGetProfileQuery } from '../../api/apiSlice.js'
 import { useUpdateUserNamesMutation } from '../../api/apiSlice.js'
 import {
   EditUserForm,
@@ -18,6 +17,7 @@ const Profile = () => {
   // Gets the user profile information
   const { user } = useContext(ConnexionContext)
 
+  // Gets the trigger function to update the user names in DB
   const [updateUserNames] = useUpdateUserNamesMutation()
 
   /**
