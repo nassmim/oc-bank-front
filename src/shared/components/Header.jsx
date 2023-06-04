@@ -56,10 +56,10 @@ const Header = () => {
       <div>
         {user ? (
           <>
-            <a className="main-nav-item" href="./user.html">
+            <Link to="/profile" className="main-nav-item">
               <i className="fa fa-user-circle"></i>
               {user.firstName}
-            </a>
+            </Link>
             <Link className="main-nav-item" to="/" onClick={logout}>
               <i className="fa fa-sign-out"></i>
               Sign Out
