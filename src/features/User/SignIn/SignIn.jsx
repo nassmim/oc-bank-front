@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { useLoginMutation } from '../../api/Auth/authApiSlice.js'
-import { useDispatch, useSelector } from 'react-redux'
-import { loggedIn, selectToken } from '../userSlice.js'
-import { useLazyGetProfileQuery } from '../../api/apiSlice.js'
+import { useDispatch } from 'react-redux'
+import { loggedIn } from '../userSlice.js'
+import { ConnexionContext } from '../../../shared/context/connexion.js'
 
 const SignIn = () => {
-  const tokenFromState = useSelector(selectToken)
   const emailInputElement = useRef()
   const passwordInputElement = useRef()
   const rememberMeCheckboxElement = useRef()
@@ -14,9 +13,7 @@ const SignIn = () => {
   const [loginApiRequest] = useLoginMutation()
   const navigate = useNavigate()
 
-  // Gets the trigger to fetch user profile information
-  const [getUser] = useLazyGetProfileQuery()
-
+  const { user } = useContext(ConnexionContext)
 
   /**
    * Saves the token in the browser
@@ -57,22 +54,10 @@ const SignIn = () => {
 
   // Determines if user must remain on page or get redirected to the profile
   useEffect(() => {
-    // Gets the user's profile and redirects him to the profile screen
-    const triggerGetUser = async () => {
-      try {
-        await getUser().unwrap()
-      } catch (error) {
-        console.log(error)
-      }
+    if (user) {
       navigate('/profile')
-    }
-
-    // If the token exists, the user either just logged in from the form  or
-    // he went to this screen while alredy connected
-    if (tokenFromState) {
-      triggerGetUser()
     } else emailInputElement.current.focus()
-  }, [tokenFromState, getUser, navigate])
+  }, [user, navigate])
 
   return (
     <main className="main bg-dark">
