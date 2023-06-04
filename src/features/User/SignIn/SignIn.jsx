@@ -54,8 +54,9 @@ const SignIn = () => {
     activateUser(token)
   }
 
-  // If user reaches the url screen while connected he's redirected
+  // Determines if user must remain on page or get redirected to the profile
   useEffect(() => {
+    // Gets the user's profile and redirects him to the profile screen
     const triggerGetUser = async () => {
       try {
         await getUser().unwrap()
@@ -65,6 +66,8 @@ const SignIn = () => {
       navigate('/profile')
     }
 
+    // If the token exists, the user either just logged in from the form  or
+    // he went to this screen while alredy connected
     if (tokenFromState) {
       triggerGetUser()
     } else emailInputElement.current.focus()
