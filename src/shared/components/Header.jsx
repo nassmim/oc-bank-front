@@ -9,6 +9,7 @@ const Header = () => {
   const token = useSelector(selectToken)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
   // Gets the user information and its trigger function to fetch it again
   const [getUser, { data: userData }] = useLazyGetProfileQuery()
 

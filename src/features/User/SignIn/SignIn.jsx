@@ -17,6 +17,7 @@ const SignIn = () => {
   // Gets the trigger to fetch user profile information
   const [getUser] = useLazyGetProfileQuery()
 
+
   /**
    * Saves the token in the browser
    * @param {String} token as a JWT
