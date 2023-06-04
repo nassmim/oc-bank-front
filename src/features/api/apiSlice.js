@@ -43,4 +43,8 @@ export const apiSlice = createApi({
   }),
 })
 
-export const { useGetProfileQuery, useUpdateUserNamesMutation } = apiSlice
+export const {
+  useGetProfileQuery,
+  useLazyGetProfileQuery,
+  useUpdateUserNamesMutation,
+} = apiSlice

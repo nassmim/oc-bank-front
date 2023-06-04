@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
 import { useLoginMutation } from '../../api/Auth/authApiSlice.js'
-import { useDispatch } from 'react-redux'
-import { loggedIn } from '../userSlice.js'
-import { useGetProfileQuery } from '../../api/apiSlice.js'
+import { useDispatch, useSelector } from 'react-redux'
+import { loggedIn, selectToken } from '../userSlice.js'
+import { useLazyGetProfileQuery } from '../../api/apiSlice.js'
 
 const SignIn = () => {
+  const tokenFromState = useSelector(selectToken)
   const emailInputElement = useRef()
   const passwordInputElement = useRef()
   const rememberMeCheckboxElement = useRef()
@@ -14,7 +15,7 @@ const SignIn = () => {
   const navigate = useNavigate()
 
   // Gets the user profile information
-  const { data: user, isSuccess, isError } = useGetProfileQuery()
+  const [getUser, { data: user }] = useLazyGetProfileQuery()
 
   /**
    * Saves the token in the browser
@@ -51,15 +52,23 @@ const SignIn = () => {
     }
 
     activateUser(token)
-
-    navigate('/profile')
   }
 
   // If user reaches the url screen while connected he's redirected
   useEffect(() => {
-    if (isSuccess) navigate('/profile')
-    else emailInputElement.current.focus()
-  }, [isSuccess, isError])
+    const triggerGetUser = async () => {
+      try {
+        await getUser().unwrap()
+      } catch (error) {
+        console.log(error)
+      }
+      navigate('/profile')
+    }
+
+    if (tokenFromState) {
+      triggerGetUser()
+    } else emailInputElement.current.focus()
+  }, [tokenFromState, getUser, navigate])
 
   return (
     <main className="main bg-dark">
