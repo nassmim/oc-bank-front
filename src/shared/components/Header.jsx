@@ -12,7 +12,6 @@ const Header = () => {
 
   // Gets the user information and its trigger function to fetch it again
   const [getUser, { data: userData }] = useLazyGetProfileQuery()
-
   const [user, setUser] = useState(userData)
 
   const removeToken = () => {
@@ -41,7 +40,7 @@ const Header = () => {
       setUser(user)
     }
     triggerGetUser()
-  }, [token])
+  }, [token, userData])
 
   return (
     <nav className="main-nav">
