@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useGetProfileQuery } from '../../api/apiSlice.js'
 import { useUpdateUserNamesMutation } from '../../api/apiSlice.js'
 import {
@@ -8,6 +8,7 @@ import {
   EditUserButtonWrapper,
   EditUserButton,
 } from '../../User/Profile/style.js'
+import { ConnexionContext } from '../../../shared/context/connexion.js'
 
 const Profile = () => {
   const [displayEditUserForm, setDisplayEditUserForm] = useState(false)
@@ -15,7 +16,7 @@ const Profile = () => {
   const [userLastName, setUserLastName] = useState('')
 
   // Gets the user profile information
-  const { data: user } = useGetProfileQuery()
+  const { user } = useContext(ConnexionContext)
 
   const [updateUserNames] = useUpdateUserNamesMutation()
 
