@@ -2,13 +2,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import logoImg from '../../assets/img/argentBankLogo.png'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedOut, selectToken } from '../../features/User/userSlice.js'
-import { useGetProfileQuery } from '../../features/api/apiSlice.js'
+import { useLazyGetProfileQuery } from '../../features/api/apiSlice.js'
+import { useEffect, useState } from 'react'
 
 const Header = () => {
   const token = useSelector(selectToken)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { data: user } = useGetProfileQuery()
+  // Gets the user information and its trigger function to fetch it again
+  const [getUser, { data: userData }] = useLazyGetProfileQuery()
+
+  const [user, setUser] = useState(userData)
 
   const removeToken = () => {
     dispatch(loggedOut())
@@ -19,6 +23,24 @@ const Header = () => {
     removeToken()
     navigate('/')
   }
+
+  /* Needs this useEffect to ensure the header displays the right screen
+  depending on user connexion status. User will be considered disconnected if:
+  - he logged out himself
+  - the token has expirerd
+  */
+  useEffect(() => {
+    const triggerGetUser = async () => {
+      let user
+      try {
+        user = await getUser().unwrap()
+      } catch (error) {
+        console.log(error)
+      }
+      setUser(user)
+    }
+    triggerGetUser()
+  }, [token])
 
   return (
     <nav className="main-nav">
@@ -31,7 +53,7 @@ const Header = () => {
         <h1 className="sr-only">Argent Bank</h1>
       </Link>
       <div>
-        {token && user ? (
+        {user ? (
           <>
             <a className="main-nav-item" href="./user.html">
               <i className="fa fa-user-circle"></i>
