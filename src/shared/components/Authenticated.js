@@ -1,6 +1,5 @@
 import { useLocation, Outlet, Navigate } from 'react-router-dom'
 import { useContext, useEffect, useState } from 'react'
-import { useGetProfileQuery } from '../../features/api/apiSlice.js'
 import { ConnexionContext } from '../context/connexion.js'
 
 /**

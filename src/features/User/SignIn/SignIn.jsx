@@ -4,13 +4,22 @@ import { useLoginMutation } from '../../api/Auth/authApiSlice.js'
 import { useDispatch } from 'react-redux'
 import { loggedIn } from '../userSlice.js'
 import { ConnexionContext } from '../../../shared/context/connexion.js'
+import styled from 'styled-components'
+
+const ErrorMessage = styled.p`
+  color: red;
+  ${(props) => {
+    if (props.isVisible) return ` visiblity: visible `
+    else return ` visibility: hidden `
+  }}
+`
 
 const SignIn = () => {
   const emailInputElement = useRef()
   const passwordInputElement = useRef()
   const rememberMeCheckboxElement = useRef()
   const dispatch = useDispatch()
-  const [loginApiRequest] = useLoginMutation()
+  const [loginApiRequest, { isError: loginFailed }] = useLoginMutation()
   const navigate = useNavigate()
 
   const { user } = useContext(ConnexionContext)
@@ -65,6 +74,9 @@ const SignIn = () => {
         <i className="fa fa-user-circle sign-in-icon"></i>
         <h1>Sign In</h1>
         <form>
+          <ErrorMessage isVisible={loginFailed}>
+            Verify your email and password
+          </ErrorMessage>
           <div className="input-wrapper">
             <label htmlFor="email">Email address</label>
             <input ref={emailInputElement} type="text" id="email" />
