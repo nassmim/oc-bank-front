@@ -9,14 +9,10 @@ import { selectToken } from '../../features/User/userSlice.js'
 export const ConnexionContext = createContext()
 
 export const ConnexionProvider = ({ children }) => {
-  // Gets the user information and its trigger function to fetch it again
-  const { data: userData, isLoading } = useGetProfileQuery()
-  const [user, setUser] = useState(userData)
-
-  // Gets the user information and its trigger function to fetch it again
-  const [getUser, { data: userUpdated }] = useLazyGetProfileQuery()
-
   const token = useSelector(selectToken)
+  // Gets the user information and its trigger function to fetch it again
+  const [getUser, { data: userUpdated, isLoading }] = useLazyGetProfileQuery()
+  const [user, setUser] = useState(userUpdated)
 
   /* Needs this useEffect to ensure the header displays the right screen
   depending on user connexion status. User will be considered disconnected if:
